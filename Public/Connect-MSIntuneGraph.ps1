@@ -43,12 +43,14 @@ function Connect-MSIntuneGraph {
         [parameter(Mandatory = $true, ParameterSetName = "Interactive", HelpMessage = "Specify the tenant name or ID, e.g. tenant.onmicrosoft.com or <GUID>.")]
         [parameter(Mandatory = $true, ParameterSetName = "DeviceCode")]
         [parameter(Mandatory = $true, ParameterSetName = "ClientSecret")]
+        [parameter(Mandatory = $true, ParameterSetName = "ClientCertificate")]
         [ValidateNotNullOrEmpty()]
         [string]$TenantID,
         
         [parameter(Mandatory = $false, ParameterSetName = "Interactive", HelpMessage = "Application ID (Client ID) for an Azure AD service principal. Uses by default the 'Microsoft Intune PowerShell' service principal Application ID.")]
         [parameter(Mandatory = $false, ParameterSetName = "DeviceCode")]
         [parameter(Mandatory = $true, ParameterSetName = "ClientSecret")]
+        [parameter(Mandatory = $true, ParameterSetName = "ClientCertificate")]
         [ValidateNotNullOrEmpty()]
         [string]$ClientID,
 
@@ -56,6 +58,11 @@ function Connect-MSIntuneGraph {
         [parameter(Mandatory = $true, ParameterSetName = "ClientSecret")]
         [ValidateNotNullOrEmpty()]
         [string]$ClientSecret,
+
+        [parameter(Mandatory = $false, HelpMessage = "App reg cert.")]
+        [parameter(Mandatory = $true, ParameterSetName = "ClientCertificate")]
+        [ValidateNotNullOrEmpty()]
+        [System.Security.Cryptography.X509Certificates.X509Certificate2]$ClientCertificate,
 
         [parameter(Mandatory = $false, ParameterSetName = "Interactive", HelpMessage = "Specify the Redirect URI (also known as Reply URL) of the custom Azure AD service principal.")]
         [parameter(Mandatory = $false, ParameterSetName = "DeviceCode")]
@@ -129,6 +136,10 @@ function Connect-MSIntuneGraph {
                 "ClientSecret" {
                     Write-Verbose "Using clientSecret"
                     $AccessTokenArguments.Add("ClientSecret", $(ConvertTo-SecureString $clientSecret -AsPlainText -Force))
+                }
+                "ClientCertificate" {
+                    Write-Verbose "Using clientCertificate"
+                    $AccessTokenArguments.Add("ClientCertificate", $ClientCertificate)
                 }
             }
 
